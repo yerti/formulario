@@ -7,16 +7,16 @@ import { SendProofOfPayment } from "../../types/entities/SendProofOfPayment";
 import Modal from "../Modal";
 
 const initialProofOfPayment: SendProofOfPayment = {
-  nameTotal: "",
-  numberDocument: "",
-  address: "",
-  phoneNumber: "",
-  period: "",
-  price: "",
-  formatPayment: "",
-  membershipStart: "",
-  membershipTermination: "",
-  paymentType: "contado",
+  nombreYApellidos: "",
+  numeroDocumento: "",
+  direccion: "",
+  telefonoSocio: "",
+  periodo: "",
+  precio: 0,
+  abono: 0,
+  formaDePago: "",
+  inicioDeMembresia: "",
+  terminoDeMembresia: "",
 };
 
 export default function FormControl() {
@@ -24,6 +24,7 @@ export default function FormControl() {
   const [formData, setFormData] = useState<SendProofOfPayment>(
     initialProofOfPayment
   );
+  const [hideAbono, setHideAbono] = useState(true);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,24 +42,17 @@ export default function FormControl() {
     setShowModal(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value, type, checked } = e.target;
-
-    // Manejar campos de tipo radio para paymentType
-    if (type === "radio") {
-      setFormData((prevData) => ({
-        ...prevData,
-        paymentType: id as "contado" | "partes", // Asegurarse de que el tipo sea correcto
-      }));
-    } else {
-      // Manejar campos de tipo texto y number
-      setFormData((prevData) => ({
-        ...prevData,
-        [id]: value,
-      }));
-    }
+  const handleChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHideAbono(!hideAbono);
+  };
   const handleDateChange = (id: string) => (date: string) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -75,8 +69,9 @@ export default function FormControl() {
     try {
       const formattedData = {
         ...data,
-        membershipStart: formatDate(data.membershipStart),
-        membershipTermination: formatDate(data.membershipTermination),
+        inicioDeMembresia: formatDate(data.inicioDeMembresia),
+        terminoDeMembresia: formatDate(data.terminoDeMembresia),
+        telefonoSocio: String(data.telefonoSocio),
       };
 
       const response = await fetch(
@@ -111,44 +106,44 @@ export default function FormControl() {
       <div className={styles.contentForm}>
         <form onSubmit={handleSubmit} className={styles.form}>
           <Control
-            id="nameTotal"
+            id="nombreYApellidos"
             type="text"
             titleLabel="Nombre Completo"
-            onChange={handleChange}
-            value={formData.nameTotal}
-            name="nameTotal"
+            onChange={handleChangeForm}
+            value={formData.nombreYApellidos}
+            name="nombreYApellidos"
           />
           <Control
-            id="numberDocument"
-            type="number"
+            id="numeroDocumento"
+            type="text"
             titleLabel="Numero de Documento"
-            onChange={handleChange}
-            value={formData.numberDocument}
-            name="numberDocument"
+            onChange={handleChangeForm}
+            value={formData.numeroDocumento}
+            name="numeroDocumento"
           />
           <Control
-            id="address"
+            id="direccion"
             type="text"
             titleLabel="Dirección"
-            onChange={handleChange}
-            value={formData.address}
-            name="address"
+            onChange={handleChangeForm}
+            value={formData.direccion}
+            name="direccion"
           />
           <Control
-            id="phoneNumber"
-            type="text"
+            id="telefonoSocio"
+            type="number"
             titleLabel="Telefono"
-            onChange={handleChange}
-            value={formData.phoneNumber}
-            name="phoneNumber"
+            onChange={handleChangeForm}
+            value={formData.telefonoSocio}
+            name="telefonoSocio"
           />
           <Control
-            id="period"
+            id="periodo"
             type="text"
-            titleLabel="Periodo"
-            onChange={handleChange}
-            value={formData.period}
-            name="period"
+            titleLabel="periodoo"
+            onChange={handleChangeForm}
+            value={formData.periodo}
+            name="periodo"
           />
           <div>
             <h3>Tipo de Pago</h3>
@@ -158,7 +153,7 @@ export default function FormControl() {
                   type="radio"
                   id="contado"
                   name="paymentType"
-                  checked={formData.paymentType === "contado"}
+                  checked={hideAbono}
                   onChange={handleChange}
                 />
                 Pago al contado
@@ -168,52 +163,50 @@ export default function FormControl() {
                   type="radio"
                   id="partes"
                   name="paymentType"
-                  checked={formData.paymentType === "partes"}
+                  checked={!hideAbono}
                   onChange={handleChange}
                 />
                 Pago en partes
               </label>
             </div>
-            {formData.paymentType === "partes" && (
+            <Control
+              id="precio"
+              type="number"
+              titleLabel="Precio"
+              onChange={handleChange}
+              value={formData.precio}
+              name="precio"
+            />
+            {!hideAbono && (
               <Control
-                id="price"
+                id="abono"
                 type="number"
-                titleLabel="Monto en partes"
+                titleLabel="Abono"
                 onChange={handleChange}
-                value={formData.price}
-                name="price"
-              />
-            )}
-            {formData.paymentType === "contado" && (
-              <Control
-                id="price"
-                type="number"
-                titleLabel="Monto Total"
-                onChange={handleChange}
-                value={formData.price}
-                name="price"
+                value={formData.abono}
+                name="abono"
               />
             )}
           </div>
           <Control
-            id="formatPayment"
+            id="formaDePago"
             type="text"
             titleLabel="Forma de pago"
-            onChange={handleChange}
-            value={formData.formatPayment}
-            name="formatPayment"
+            onChange={handleChangeForm}
+            value={formData.formaDePago}
+            name="formaDePago"
           />
           <Calendar
-            id="membershipStart"
+            id="inicioDeMembresia"
             labelName="Inicio de membresia"
-            onChange={handleDateChange("membershipStart")}
-            value={formData.membershipStart}
+            onChange={handleDateChange("inicioDeMembresia")}
+            value={formData.inicioDeMembresia}
           />
           <Calendar
-            id="membershipTermination"
+            id="terminoDeMembresia"
             labelName="Termino de membresia"
-            onChange={handleDateChange("membershipTermination")}
-            value={formData.membershipTermination}
+            onChange={handleDateChange("terminoDeMembresia")}
+            value={formData.terminoDeMembresia}
           />
 
           <div className={styles.contentButtonAdd}>

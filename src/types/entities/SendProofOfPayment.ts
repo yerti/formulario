@@ -1,12 +1,12 @@
 export interface SendProofOfPayment {
-  nameTotal: string;
-  numberDocument: string;
-  address: string;
-  phoneNumber: string;
-  period: string;
-  price: string;
-  formatPayment: string;
-  membershipStart: string;
-  membershipTermination: string;
-  paymentType: "contado" | "partes"; 
+  nombreYApellidos: string;
+  numeroDocumento: string;
+  direccion: string;
+  telefonoSocio: string;
+  periodo: string;
+  precio: number;
+  formaDePago: string;
+  abono?: number;
+  inicioDeMembresia: string;
+  terminoDeMembresia: string;
 }
