@@ -36,10 +36,12 @@ export default function FormControl() {
     sendPaymentProof(formData).then((message) => {
       alert(message);
     });
+    setFormData(initialProofOfPayment);
   };
 
   const handleCancel = () => {
     setShowModal(false);
+    setFormData(initialProofOfPayment); 
   };
 
   const handleChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
