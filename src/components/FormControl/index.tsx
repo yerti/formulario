@@ -16,6 +16,7 @@ const initialProofOfPayment: SendProofOfPayment = {
   formatPayment: "",
   membershipStart: "",
   membershipTermination: "",
+  paymentType: "contado",
 };
 
 export default function FormControl() {
@@ -41,11 +42,21 @@ export default function FormControl() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
+    const { id, value, type, checked } = e.target;
+
+    // Manejar campos de tipo radio para paymentType
+    if (type === "radio") {
+      setFormData((prevData) => ({
+        ...prevData,
+        paymentType: id as "contado" | "partes", // Asegurarse de que el tipo sea correcto
+      }));
+    } else {
+      // Manejar campos de tipo texto y number
+      setFormData((prevData) => ({
+        ...prevData,
+        [id]: value,
+      }));
+    }
   };
 
   const handleDateChange = (id: string) => (date: string) => {
@@ -67,7 +78,7 @@ export default function FormControl() {
         membershipStart: formatDate(data.membershipStart),
         membershipTermination: formatDate(data.membershipTermination),
       };
-  
+
       const response = await fetch(
         "https://lasting-master-walleye.ngrok-free.app/whatsappAttachedFile",
         {
@@ -78,11 +89,11 @@ export default function FormControl() {
           body: JSON.stringify(formattedData),
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Error en la solicitud");
       }
-  
+
       const result = await response.json();
       console.log("Comprobante enviado:", result);
       return "Comprobante enviado con éxito";
@@ -139,14 +150,51 @@ export default function FormControl() {
             value={formData.period}
             name="period"
           />
-          <Control
-            id="price"
-            type="number"
-            titleLabel="Precio"
-            onChange={handleChange}
-            value={formData.price}
-            name="price"
-          />
+          <div>
+            <h3>Tipo de Pago</h3>
+            <div className={styles.inputRadioTypePayment}>
+              <label>
+                <input
+                  type="radio"
+                  id="contado"
+                  name="paymentType"
+                  checked={formData.paymentType === "contado"}
+                  onChange={handleChange}
+                />
+                Pago al contado
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  id="partes"
+                  name="paymentType"
+                  checked={formData.paymentType === "partes"}
+                  onChange={handleChange}
+                />
+                Pago en partes
+              </label>
+            </div>
+            {formData.paymentType === "partes" && (
+              <Control
+                id="price"
+                type="number"
+                titleLabel="Monto en parte"
+                onChange={handleChange}
+                value={formData.price}
+                name="price"
+              />
+            )}
+            {formData.paymentType === "contado" && (
+              <Control
+                id="price"
+                type="number"
+                titleLabel="Monto Total"
+                onChange={handleChange}
+                value={formData.price}
+                name="price"
+              />
+            )}
+          </div>
           <Control
             id="formatPayment"
             type="text"
@@ -167,6 +215,7 @@ export default function FormControl() {
             onChange={handleDateChange("membershipTermination")}
             value={formData.membershipTermination}
           />
+
           <div className={styles.contentButtonAdd}>
             <button className={styles.buttonAdd} type="submit">
               Enviar
