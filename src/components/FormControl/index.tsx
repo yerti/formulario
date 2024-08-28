@@ -89,8 +89,7 @@ export default function FormControl() {
         throw new Error("Error en la solicitud");
       }
 
-      const result = await response.json();
-      console.log("Comprobante enviado:", result);
+      console.log("Comprobante enviado:");
       return "Comprobante enviado con éxito";
     } catch (error) {
       console.error("Error al enviar comprobante:", error);
