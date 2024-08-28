@@ -1,0 +1,30 @@
+.contentCalendar {
+    position: relative;
+    margin-bottom: 24px;
+}
+.contentCalendar > input {
+    width: 100%;
+    height: 46px;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #98a3b8 ;
+    padding: 0 16px;
+}
+.contentCalendar > input:focus {
+    outline: none;
+}
+.notActive {
+    left: 16px;
+    position: absolute;
+    background-color: white;
+    top: 14px;
+    font-size: 15px;
+}
+.active {
+    position: absolute;
+    background-color: white;
+    top: -7px;
+    left: 14px;
+    font-size: 13px;
+    color: #0052cc;
+}

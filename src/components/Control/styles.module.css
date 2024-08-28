@@ -1,0 +1,49 @@
+.contentTotalControl {
+  position: relative;
+}
+.contentControl {
+  position: relative;
+}
+.contentControl > input,
+.contentControl > select {
+  box-sizing: border-box;
+  height: 46px;
+  line-height: 46px;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  width: 100%;
+  font-size: 15px;
+  padding: 0 16px;
+  border: 1px solid #98a3b8;
+  margin-bottom: 30px;
+}
+.activeLabel {
+  position: absolute;
+  background-color: white;
+  z-index: 9;
+  top: -6px;
+  left: 19px;
+  font-size: 13px;
+  color: #0052cc;
+}
+.inactiveLabel {
+  top: 13px;
+  left: 15px;
+  position: absolute;
+  font-size: 15px;
+  transition: all .3s ease;
+}
+
+.contentControl > input:focus,
+.contentControl > select:focus {
+  outline: none;
+  border-color: #0052cc;
+}
+
+.errorMessage {
+  position: absolute;
+  top: 48px;
+  font-size: 12px;
+  color: #e30425;
+}

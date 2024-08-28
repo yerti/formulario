@@ -1,0 +1,35 @@
+.contentTotalForm {
+  background-color: #ecedf0;
+}
+.contentForm {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.form {
+  background-color: white;
+  width: 360px;
+  margin: 24px;
+  padding: 20px;
+  border-radius: 8px;
+}
+.titelForm {
+  padding-top: 12px;
+  text-align: center;
+  font-size: 24px;
+}
+.contentButtonAdd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.buttonAdd {
+  width: 140px;
+  background-color: #0052cc;
+  height: 46px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  color: white;
+}
