@@ -178,7 +178,7 @@ export default function FormControl() {
               <Control
                 id="price"
                 type="number"
-                titleLabel="Monto en parte"
+                titleLabel="Monto en partes"
                 onChange={handleChange}
                 value={formData.price}
                 name="price"
