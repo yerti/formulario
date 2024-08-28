@@ -6,7 +6,7 @@ export interface SendProofOfPayment {
   periodo: string;
   precio: number;
   formaDePago: string;
-  abono?: number;
+  abono: number;
   inicioDeMembresia: string;
   terminoDeMembresia: string;
 }
