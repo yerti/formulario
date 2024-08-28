@@ -8,12 +8,7 @@ interface CalendarProps {
   onChange?: (date: string) => void;
 }
 
-export default function Calendar({
-  labelName,
-  onChange,
-  id,
-  value,
-}: CalendarProps) {
+export default function Calendar({ labelName, onChange, id, value }: CalendarProps) {
   const [selectedDate, setSelectedDate] = useState<string>(value);
   const [isFocused, setIsFocused] = useState<boolean>(false);
 

@@ -55,6 +55,43 @@ export default function FormControl() {
     }));
   };
 
+  const formatDate = (date: string) => {
+    const [year, month, day] = date.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
+  async function sendPaymentProof(data: SendProofOfPayment) {
+    try {
+      const formattedData = {
+        ...data,
+        membershipStart: formatDate(data.membershipStart),
+        membershipTermination: formatDate(data.membershipTermination),
+      };
+  
+      const response = await fetch(
+        "https://lasting-master-walleye.ngrok-free.app/whatsappAttachedFile",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedData),
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Error en la solicitud");
+      }
+  
+      const result = await response.json();
+      console.log("Comprobante enviado:", result);
+      return "Comprobante enviado con éxito";
+    } catch (error) {
+      console.error("Error al enviar comprobante:", error);
+      return "Error al enviar comprobante";
+    }
+  }
+
   return (
     <div className={styles.contentTotalForm}>
       <div>
@@ -143,30 +180,4 @@ export default function FormControl() {
       )}
     </div>
   );
-}
-
-async function sendPaymentProof(data: SendProofOfPayment) {
-  try {
-    const response = await fetch(
-      "https://lasting-master-walleye.ngrok-free.app/whatsappAttachedFile",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Error en la solicitud");
-    }
-
-    const result = await response.json();
-    console.log("Comprobante enviado:", result);
-    return "Comprobante enviado con éxito";
-  } catch (error) {
-    console.error("Error al enviar comprobante:", error);
-    return "Error al enviar comprobante";
-  }
 }
