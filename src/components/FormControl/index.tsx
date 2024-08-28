@@ -50,7 +50,7 @@ export default function FormControl() {
     }));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeHideAbono = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHideAbono(!hideAbono);
   };
   const handleDateChange = (id: string) => (date: string) => {
@@ -154,7 +154,7 @@ export default function FormControl() {
                   id="contado"
                   name="paymentType"
                   checked={hideAbono}
-                  onChange={handleChange}
+                  onChange={handleChangeHideAbono}
                 />
                 Pago al contado
               </label>
@@ -164,7 +164,7 @@ export default function FormControl() {
                   id="partes"
                   name="paymentType"
                   checked={!hideAbono}
-                  onChange={handleChange}
+                  onChange={handleChangeHideAbono}
                 />
                 Pago en partes
               </label>
@@ -173,7 +173,7 @@ export default function FormControl() {
               id="precio"
               type="number"
               titleLabel="Precio"
-              onChange={handleChange}
+              onChange={handleChangeForm}
               value={formData.precio}
               name="precio"
             />
@@ -182,7 +182,7 @@ export default function FormControl() {
                 id="abono"
                 type="number"
                 titleLabel="Abono"
-                onChange={handleChange}
+                onChange={handleChangeForm}
                 value={formData.abono}
                 name="abono"
               />
