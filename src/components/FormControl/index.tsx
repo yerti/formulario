@@ -5,6 +5,7 @@ import Calendar from "../Calendar";
 import styles from "./styles.module.css";
 import { SendProofOfPayment } from "../../types/entities/SendProofOfPayment";
 import Modal from "../Modal";
+import * as Yup from "yup";
 
 const initialProofOfPayment: SendProofOfPayment = {
   nombreYApellidos: "",
@@ -19,16 +20,42 @@ const initialProofOfPayment: SendProofOfPayment = {
   terminoDeMembresia: "",
 };
 
+const validationSchema = Yup.object().shape({
+  nombreYApellidos: Yup.string().required("Este campo es requerido"),
+  numeroDocumento: Yup.string().required("Este campo es requerido"),
+  direccion: Yup.string().required("Este campo es requerido"),
+  telefonoSocio: Yup.string().matches(
+    /^9\d{8}$/,
+    "Ingrese un número de teléfono válido"
+  ),
+  periodo: Yup.string().required("Este campo es requerido"),
+  precio: Yup.string().required("Ingresa un número válido y diferente de 0"),
+  abono: Yup.string().required("Ingresa un número válido y diferente de 0"),
+});
+
 export default function FormControl() {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState<SendProofOfPayment>(
     initialProofOfPayment
   );
   const [hideAbono, setHideAbono] = useState(true);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setShowModal(true);
+  };
+
+  const validateField = async (name: string, value: string) => {
+    try {
+      await validationSchema.validateAt(name, { ...formData, [name]: value });
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    } catch (err) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: (err as Yup.ValidationError).message,
+      }));
+    }
   };
 
   const handleConfirm = () => {
@@ -41,20 +68,36 @@ export default function FormControl() {
 
   const handleCancel = () => {
     setShowModal(false);
-    setFormData(initialProofOfPayment); 
   };
 
   const handleChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
+    const { name, value } = e.target;
+
+    let filteredValue = value;
+
+    if (name === "telefonoSocio") {
+      filteredValue = value.replace(/[^0-9]/g, "");
+    }
+
     setFormData((prevData) => ({
       ...prevData,
-      [id]: value,
+      [name]:
+        name === "precio" || name === "abono"
+          ? Number(filteredValue)
+          : filteredValue,
     }));
+    validateField(name, filteredValue);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    validateField(name, value);
   };
 
   const handleChangeHideAbono = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHideAbono(!hideAbono);
   };
+
   const handleDateChange = (id: string) => (date: string) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -69,11 +112,14 @@ export default function FormControl() {
 
   async function sendPaymentProof(data: SendProofOfPayment) {
     try {
+      await validationSchema.validate(formData, { abortEarly: false });
       const formattedData = {
         ...data,
         inicioDeMembresia: formatDate(data.inicioDeMembresia),
         terminoDeMembresia: formatDate(data.terminoDeMembresia),
         telefonoSocio: String(data.telefonoSocio),
+        precio: Number(data.precio),
+        abono: Number(data.abono),
       };
 
       const response = await fetch(
@@ -98,6 +144,17 @@ export default function FormControl() {
       return "Error al enviar comprobante";
     }
   }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const { name } = e.target as HTMLInputElement;
+
+    if (
+      name === "telefonoSocio" &&
+      !/[\d]/.test(e.key) &&
+      e.key !== "Backspace"
+    ) {
+      e.preventDefault();
+    }
+  };
 
   return (
     <div className={styles.contentTotalForm}>
@@ -111,40 +168,51 @@ export default function FormControl() {
             type="text"
             titleLabel="Nombre Completo"
             onChange={handleChangeForm}
+            onBlur={handleBlur}
             value={formData.nombreYApellidos}
             name="nombreYApellidos"
+            error={errors.nombreYApellidos}
           />
           <Control
             id="numeroDocumento"
             type="text"
             titleLabel="Numero de Documento"
             onChange={handleChangeForm}
+            onBlur={handleBlur}
             value={formData.numeroDocumento}
             name="numeroDocumento"
+            error={errors.numeroDocumento}
           />
           <Control
             id="direccion"
             type="text"
             titleLabel="Dirección"
             onChange={handleChangeForm}
+            onBlur={handleBlur}
             value={formData.direccion}
             name="direccion"
+            error={errors.direccion}
           />
           <Control
             id="telefonoSocio"
-            type="number"
+            type="tel"
             titleLabel="Telefono"
             onChange={handleChangeForm}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
             value={formData.telefonoSocio}
             name="telefonoSocio"
+            error={errors.telefonoSocio}
           />
           <Control
             id="periodo"
             type="text"
-            titleLabel="periodoo"
+            titleLabel="Periodo"
             onChange={handleChangeForm}
+            onBlur={handleBlur}
             value={formData.periodo}
             name="periodo"
+            error={errors.periodo}
           />
           <div>
             <h3>Tipo de Pago</h3>
@@ -175,8 +243,10 @@ export default function FormControl() {
               type="number"
               titleLabel="Precio"
               onChange={handleChangeForm}
+              onBlur={handleBlur}
               value={formData.precio}
               name="precio"
+              error={errors.precio}
             />
             {!hideAbono && (
               <Control
@@ -184,8 +254,10 @@ export default function FormControl() {
                 type="number"
                 titleLabel="Abono"
                 onChange={handleChangeForm}
+                onBlur={handleBlur}
                 value={formData.abono}
                 name="abono"
+                error={errors.abono}
               />
             )}
           </div>

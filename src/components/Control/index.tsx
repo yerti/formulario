@@ -10,6 +10,7 @@ interface ControlProps {
   titleLabel: string;
   error?: string;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export default function Control({
@@ -21,6 +22,7 @@ export default function Control({
   titleLabel,
   error,
   onBlur,
+  onKeyDown,
 }: ControlProps) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -32,21 +34,38 @@ export default function Control({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
+
+    if (
+      name === "telefonoSocio" &&
+      !/[\d]/.test(e.key) &&
+      e.key !== "Backspace"
+    ) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className={styles.contentTotalControl}>
       <div className={styles.contentControl}>
         <input
           id={id}
           type={type}
-          value={value}
+          value={value || ""}
           onChange={onChange}
           name={name}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
         />
         <label
           htmlFor={id}
-          className={isFocused || value ? styles.activeLabel : styles.inactiveLabel}
+          className={
+            isFocused || value ? styles.activeLabel : styles.inactiveLabel
+          }
         >
           {titleLabel}
         </label>
@@ -55,4 +74,3 @@ export default function Control({
     </div>
   );
 }
-
